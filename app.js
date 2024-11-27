@@ -12,22 +12,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 dotenv.config();
 
-app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://job-portal-puce-phi.vercel.app/"
-  ); // Specify the allowed origin
-  res.header("Access-Control-Allow-Credentials", "true"); // Enable credentials
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
-app.get("/", (req, res) => {
-  res.send("Hello from server side!");
-});
+const allowedOrigins = ["https://job-portal-puce-phi.vercel.app/"];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (allowedOrigins.includes(origin) || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 
 app.use("/api", require("./routes/user"));
 
